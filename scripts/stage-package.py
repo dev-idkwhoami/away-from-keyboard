@@ -41,7 +41,11 @@ copy(root / 'frontend/public/afk.svg', 'usr/share/icons/hicolor/scalable/apps/af
 copy(root / 'packaging/PROJECT-LICENSE', 'usr/share/licenses/afk/PROJECT-LICENSE')
 copy(root / 'THIRD_PARTY.md', 'usr/share/licenses/afk/THIRD_PARTY.md')
 copy(root / 'README.md', 'usr/share/doc/afk/README.md')
-copy(root / 'packaging/README.md', 'usr/share/doc/afk/PACKAGING.md')
+copy(root / 'packaging/README.md', 'usr/share/doc/afk/packaging/README.md')
+copy(root / 'THIRD_PARTY.md', 'usr/share/doc/afk/THIRD_PARTY.md')
+copy(root / 'frontend/public/afk-neon.png', 'usr/share/doc/afk/frontend/public/afk-neon.png')
+for guide in (root / 'docs').glob('*.md'):
+    copy(guide, 'usr/share/doc/afk/docs/' + guide.name)
 # Preserve license files from native, Go and frontend dependencies. Explicitly
 # exclude git internals and build outputs; include nested third-party notices.
 license_root = Path('usr/share/licenses/afk/dependencies')

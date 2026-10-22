@@ -3,6 +3,7 @@ pkgname=afk
 pkgver=0.1.0
 pkgrel=1
 pkgdesc='Away From Keyboard: local dictation and meeting transcription'
+url='https://github.com/dev-idkwhoami/away-from-keyboard'
 arch=('x86_64')
 # The project owner has not selected a public source license yet.
 license=('LicenseRef-All-Rights-Reserved')
