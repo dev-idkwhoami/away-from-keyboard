@@ -64,7 +64,13 @@ check. No audio recording or GUI session is required by CI.
 
 Unused hosted-runner SDKs are removed to make room for CUDA; package download
 cache is cleared after installation. The job allows 180 minutes with two compiler
-jobs and does not rely on cached build outputs. The Arch image and repositories
+jobs. Native sources and compiled engines are cached after a successful package
+build and test run. Exact cache keys include the native source/build scripts and
+the installed compiler, CMake, CUDA, glibc and SDL versions. There is no partial-key
+fallback: a toolchain or engine change gets a clean build. Frontend changes reuse
+the engines. Cache misses or eviction simply rebuild them; models and user data
+are never cached. The container always mounts the source at `/src`, preserving
+CMake's build paths between runs. The Arch image and repositories
 are rolling, so this is not a bit-for-bit reproducible build; the installed package
 includes `build-packages.txt` recording exact toolchain/dependency versions.
 
@@ -79,3 +85,5 @@ References used for the workflow and package layout:
 - https://cli.github.com/manual/gh_release_create
 - https://man.archlinux.org/man/PKGBUILD.5.en
 - https://man.archlinux.org/man/makepkg.8.en
+
+Native caching follows [actions/cache restore/save](https://github.com/actions/cache/tree/main#using-a-combination-of-restore-and-save-actions).
