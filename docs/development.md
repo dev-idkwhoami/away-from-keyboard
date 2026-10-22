@@ -88,20 +88,15 @@ runtimes require no Python or PyTorch installation.
 
 ## CI and release builds
 
-Pushes to `master` validate the frontend and run Go tests and vet, including the
-GTK desktop module. These checks compile application code and frontend assets,
-but do not install CUDA, build native inference engines, or produce a package.
+Only pushed version tags (`v*`) trigger CI. Normal branch pushes do not run
+workflows, and there is no manual workflow trigger. The tag must match `VERSION`
+(for example, `v0.1.0` for version `0.1.0`).
 
-Version tags (`v*`) and manual workflow runs build the Arch package after
-validation passes. Only tag runs attach the package to a draft release; manual
-runs upload the package and checksum as a 30-day Actions artifact.
+Each tag run validates the frontend and runs Go tests and vet, including the GTK
+desktop module. After validation passes, it builds the Arch package, uploads the
+package and checksum as a 30-day Actions artifact, and attaches them to a draft
+release. Publishing the release remains a separate action.
 
 The package job retains the native-engine cache. Reuse requires an exact match
 for native sources and the Arch toolchain versions. A cache hit avoids rebuilding
 those engines; its total runtime must be measured on a subsequent package run.
-
-A small planning job skips branch validation when that exact commit already has
-an available `v*` tag. Tag and manual runs always validate. For releases, create
-the tag locally and push the branch and tag together (`git push --atomic origin
-master vX.Y.Z`) so the branch guard can see the tag. A tag pushed after branch
-validation has already started cannot retroactively prevent those checks.

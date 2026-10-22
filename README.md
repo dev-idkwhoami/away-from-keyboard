@@ -40,8 +40,8 @@ to quit the app.
 Download an Arch package from [Releases](https://github.com/dev-idkwhoami/away-from-keyboard/releases)
 when a release is published. Development packages are available from successful
 [Arch package builds](https://github.com/dev-idkwhoami/away-from-keyboard/actions/workflows/package.yml):
-open a successful tag or manual package run, download `afk-arch-x86_64`,
-and extract the artifact ZIP. Pushes to `master` run code validation only.
+open a successful version-tag run, download `afk-arch-x86_64`,
+and extract the artifact ZIP. Normal branch pushes do not trigger CI.
 
 From the directory containing the downloaded package:
 
