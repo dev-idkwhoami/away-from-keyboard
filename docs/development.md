@@ -99,3 +99,9 @@ runs upload the package and checksum as a 30-day Actions artifact.
 The package job retains the native-engine cache. Reuse requires an exact match
 for native sources and the Arch toolchain versions. A cache hit avoids rebuilding
 those engines; its total runtime must be measured on a subsequent package run.
+
+A small planning job skips branch validation when that exact commit already has
+an available `v*` tag. Tag and manual runs always validate. For releases, create
+the tag locally and push the branch and tag together (`git push --atomic origin
+master vX.Y.Z`) so the branch guard can see the tag. A tag pushed after branch
+validation has already started cannot retroactively prevent those checks.
