@@ -47,7 +47,7 @@ archives in `dist/` or native caches. Delete `work/package-runtime` to force nat
 
 ## GitHub Actions
 
-`.github/workflows/package.yml` runs manually from the Actions page or when a
+`.github/workflows/package.yml` runs on pushes to `main`, manually from the Actions page, or when a
 `vN.N.N` tag matching `VERSION` is pushed. Manual runs upload a downloadable
 artifact; tag runs also create an **unpublished draft Release** with the package
 and checksum attached. There is no AUR workflow and no automatic publication.
