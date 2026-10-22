@@ -19,6 +19,9 @@ func patchTerminal(source, path string) error {
 		return err
 	}
 	s := string(b)
+	// Quiet steps advance the audio window too. Commit before dropping that
+	// window, otherwise a later partial can erase speech from before the pause.
+	s = strings.Replace(s, "if (rms < gate_level) { continue; }", silenceBoundary, 1)
 	// The desktop reads a pipe, so announce readiness without waiting for speech.
 	if !strings.Contains(s, `printf("[Start speaking]\n"); std::fflush(stdout);`) {
 		s = strings.Replace(s, `printf("[Start speaking]\n");`, `printf("[Start speaking]\n"); std::fflush(stdout);`, 1)
@@ -60,3 +63,13 @@ func patchTerminal(source, path string) error {
 	}
 	return os.WriteFile(path, []byte(s), 0644)
 }
+
+const silenceBoundary = `if (rms < gate_level) {
+                if (!use_vad) {
+                    afk_line.commit();
+                    pcmf32_old.clear();
+                    prompt_tokens.clear();
+                    n_iter = 0;
+                }
+                continue;
+            }`

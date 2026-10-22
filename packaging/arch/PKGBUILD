@@ -1,6 +1,6 @@
 # Binary package assembled locally or by GitHub Actions. No AUR submission.
 pkgname=afk
-pkgver=0.2.0
+pkgver=0.3.0
 pkgrel=1
 pkgdesc='Away From Keyboard: local dictation and meeting transcription'
 url='https://github.com/dev-idkwhoami/away-from-keyboard'

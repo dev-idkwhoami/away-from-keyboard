@@ -90,7 +90,7 @@ runtimes require no Python or PyTorch installation.
 
 Only pushed version tags (`v*`) trigger CI. Normal branch pushes do not run
 workflows, and there is no manual workflow trigger. The tag must match `VERSION`
-(for example, `v0.2.0` for version `0.2.0`).
+(for example, `v0.3.0` for version `0.3.0`).
 
 Each tag run validates the frontend and runs Go tests and vet, including the GTK
 desktop module. After validation passes, it builds the Arch package, uploads the

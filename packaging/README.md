@@ -4,7 +4,7 @@
 checksum. Nothing is uploaded to the AUR. Install with:
 
 ```sh
-sudo pacman -U dist/afk-0.2.0-1-x86_64.pkg.tar.zst
+sudo pacman -U dist/afk-0.3.0-1-x86_64.pkg.tar.zst
 ```
 
 The package contains AFK's desktop and console executables, precompiled patched

@@ -25,7 +25,7 @@ import (
 
 const runtimeRevision = "d1be6fde11ac6e0407606b4e42fe72d34add8037" // whisper.cpp v1.9.5
 const modelRevision = "5359861c739e955e79d9a303bcbc70fb988958b1"
-const buildRecipe = runtimeRevision + ":afk-desktop-events-2"
+const buildRecipe = runtimeRevision + ":afk-desktop-events-3"
 
 //go:embed native/terminal.h
 var terminalHeader []byte
