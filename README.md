@@ -46,7 +46,7 @@ and extract the artifact ZIP. Normal branch pushes do not trigger CI.
 From the directory containing the downloaded package:
 
 ```sh
-sudo pacman -U ./afk-0.1.0-1-x86_64.pkg.tar.zst
+sudo pacman -U ./afk-0.2.0-1-x86_64.pkg.tar.zst
 ```
 
 Use the filename for the version you downloaded. Launch **Away From Keyboard**
