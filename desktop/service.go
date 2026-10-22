@@ -180,7 +180,12 @@ func (s *Studio) saveLocked() error {
 func (s *Studio) GetState() State {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	history := append([]Entry{}, s.saved.History...)
+	history := []Entry{}
+	for _, entry := range s.saved.History {
+		if entry.MeetingFolder == "" {
+			history = append(history, entry)
+		}
+	}
 	for i := range history {
 		history[i].Turns = append([]SpeakerTurn(nil), history[i].Turns...)
 	}
@@ -347,7 +352,10 @@ func (s *Studio) ToggleDictation() error {
 func (s *Studio) record(ctx context.Context, config Settings) {
 	var runErr error
 	committed, pending := "", ""
+	stopMeter := func() {}
 	defer func() {
+		stopMeter()
+		s.emitAudioLevel(0)
 		s.mu.Lock()
 		s.cmd = nil
 		if s.cancel != nil {
@@ -442,6 +450,8 @@ func (s *Studio) record(ctx context.Context, config Settings) {
 	for scanner.Scan() {
 		line := scanner.Text()
 		if line == "[Start speaking]" {
+			stopMeter()
+			stopMeter = s.startAudioMeter(ctx)
 			s.mu.Lock()
 			if s.status == "loading" {
 				s.status = "recording"

@@ -33,6 +33,7 @@ type meetingSession struct {
 	started               time.Time
 }
 type meetingTrack struct {
+	level    func([]byte)
 	ready    chan struct{}
 	file     *os.File
 	source   AudioSource
@@ -60,8 +61,6 @@ func (s *Studio) StartMeeting() error {
 	s.done = make(chan struct{})
 	s.status = "meeting-loading"
 	s.problem = ""
-	s.transcript = ""
-	s.turns = nil
 	s.fileName = ""
 	s.fileStage = ""
 	s.meetingFolder = ""
@@ -149,11 +148,14 @@ func (t *meetingTrack) capture(ctx context.Context, started time.Time) error {
 		}
 		_ = cmd.Wait()
 	}()
-	b := make([]byte, 16000)
+	b := make([]byte, 1600)
 	for {
 		n, readErr := io.ReadFull(stdout, b)
 		n -= n % 2
 		if n > 0 {
+			if t.level != nil {
+				t.level(b[:n])
+			}
 			t.mu.Lock()
 			size := t.size
 			t.mu.Unlock()
@@ -227,11 +229,6 @@ func (s *Studio) checkpointMeeting(m *meetingSession) error {
 	if err = os.Rename(path+".tmp", path); err != nil {
 		return err
 	}
-	s.mu.Lock()
-	s.turns = turns
-	s.transcript = text
-	s.mu.Unlock()
-	s.publish()
 	return nil
 }
 
@@ -282,7 +279,12 @@ func (s *Studio) runMeeting(captureCtx context.Context, m *meetingSession) {
 			runErr = e
 			return
 		}
-		tracks = append(tracks, &meetingTrack{file: f, source: source, ready: make(chan struct{})})
+		track := &meetingTrack{file: f, source: source, ready: make(chan struct{})}
+		// The bubble meters the microphone, not unrelated remote playback.
+		if i == 0 {
+			track.level = func(pcm []byte) { s.emitAudioLevel(pcmLevel(pcm)) }
+		}
+		tracks = append(tracks, track)
 	}
 	captureErrors := make(chan error, 3)
 	sourceDone := make(chan struct{})

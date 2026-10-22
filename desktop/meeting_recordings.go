@@ -6,7 +6,6 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -140,8 +139,6 @@ func (s *Studio) ProcessMeeting(id string) error {
 	s.done = make(chan struct{})
 	s.status = "meeting-processing"
 	s.problem = ""
-	s.transcript = ""
-	s.turns = nil
 	s.meetingFolder = folder
 	s.fileName = ""
 	s.fileStage = ""
@@ -160,6 +157,7 @@ func (s *Studio) CancelMeetingProcessing() {
 	s.publish()
 }
 func (s *Studio) finishMeeting(m *meetingSession, runErr error, processing bool) {
+	defer s.emitAudioLevel(0)
 	if m.captureCancel != nil {
 		m.captureCancel()
 	}
@@ -181,23 +179,6 @@ func (s *Studio) finishMeeting(m *meetingSession, runErr error, processing bool)
 			if err := os.WriteFile(filepath.Join(m.folder, "processed"), []byte(time.Now().Format(time.RFC3339)), 0600); err != nil {
 				s.problem = err.Error()
 				s.status = "error"
-			}
-		}
-		if runErr == nil && s.transcript != "" && m.config.SaveHistory {
-			// Reprocessing replaces this meeting's history entry.
-			history := []Entry{}
-			for _, entry := range s.saved.History {
-				if entry.MeetingFolder != m.folder {
-					history = append(history, entry)
-				}
-			}
-			record, _ := readMeetingRecording(m.folder)
-			s.saved.History = append([]Entry{{MeetingFolder: m.folder, ID: fmt.Sprint(time.Now().UnixNano()), Text: s.transcript, Turns: append([]SpeakerTurn(nil), s.turns...), Model: m.config.Model, Language: m.config.Language, Created: m.started.Format(time.RFC3339), Seconds: record.Seconds}}, history...)
-			if len(s.saved.History) > 200 {
-				s.saved.History = s.saved.History[:200]
-			}
-			if err := s.saveLocked(); err != nil {
-				s.problem = err.Error()
 			}
 		}
 	}

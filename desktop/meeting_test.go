@@ -165,11 +165,15 @@ func TestLiveMeetingIntegration(t *testing.T) {
 		t.Fatal("on-demand processing timed out")
 	}
 	st = s.GetState()
-	if st.Status != "idle" || len(st.History) != 1 || st.BubbleVisible {
+	if st.Status != "idle" || len(st.History) != 0 || st.BubbleVisible {
 		t.Fatalf("bad completion: %s %s", st.Status, st.Error)
 	}
+	detail, err := s.GetMeeting(id)
+	if err != nil {
+		t.Fatal(err)
+	}
 	speakers := map[string]bool{}
-	for _, turn := range st.Turns {
+	for _, turn := range detail.Turns {
 		speakers[turn.Speaker] = true
 	}
 	if !speakers["You"] || len(speakers) < 3 {
@@ -189,10 +193,10 @@ func TestLiveMeetingIntegration(t *testing.T) {
 		t.Fatal(err)
 	}
 	var checkpoint struct{ Transcript string }
-	if json.Unmarshal(b, &checkpoint) != nil || checkpoint.Transcript != st.Transcript {
+	if json.Unmarshal(b, &checkpoint) != nil || checkpoint.Transcript != detail.Transcript {
 		t.Fatal("checkpoint differs from final transcript")
 	}
-	t.Logf("On-demand meeting saved %d turns; speakers %v; transcript: %s", len(st.Turns), speakers, st.Transcript)
+	t.Logf("On-demand meeting saved %d turns; speakers %v; transcript: %s", len(detail.Turns), speakers, detail.Transcript)
 }
 
 func TestMeetingLifecycleIntegration(t *testing.T) {
@@ -337,11 +341,15 @@ func TestProcessSavedMeetingIntegration(t *testing.T) {
 			t.Fatal("processing timed out")
 		}
 		st := s.GetState()
-		if st.Status != "idle" || len(st.History) != 1 || !st.Meetings[0].Processed {
+		if st.Status != "idle" || len(st.History) != 0 || !st.Meetings[0].Processed {
 			t.Fatalf("bad processing result: %s %s", st.Status, st.Error)
 		}
+		detail, err := s.GetMeeting("processing-test")
+		if err != nil {
+			t.Fatal(err)
+		}
 		you, remote := false, false
-		for _, turn := range st.Turns {
+		for _, turn := range detail.Turns {
 			you = you || turn.Speaker == "You"
 			remote = remote || strings.HasPrefix(turn.Speaker, "Speaker ")
 		}
@@ -366,7 +374,7 @@ func TestProcessSavedMeetingIntegration(t *testing.T) {
 		t.Fatal("cancel timed out")
 	}
 	preserved, _ := os.ReadFile(filepath.Join(folder, "transcript.json"))
-	if string(completed) != string(preserved) || len(s.GetState().History) != 1 {
+	if string(completed) != string(preserved) || len(s.GetState().History) != 0 {
 		t.Fatal("cancelled retry destroyed completed transcript")
 	}
 	t.Log("On-demand processing, replacement history and cancelled-retry preservation passed")

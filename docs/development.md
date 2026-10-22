@@ -85,3 +85,17 @@ Model sizes and SHA-256 hashes live in `internal/engine`. Downloads are verified
 before being made available. AFK patches Whisper's microphone example for its
 silence gate and live output, without replacing the recognition model. Native
 runtimes require no Python or PyTorch installation.
+
+## CI and release builds
+
+Pushes to `master` validate the frontend and run Go tests and vet, including the
+GTK desktop module. These checks compile application code and frontend assets,
+but do not install CUDA, build native inference engines, or produce a package.
+
+Version tags (`v*`) and manual workflow runs build the Arch package after
+validation passes. Only tag runs attach the package to a draft release; manual
+runs upload the package and checksum as a 30-day Actions artifact.
+
+The package job retains the native-engine cache. Reuse requires an exact match
+for native sources and the Arch toolchain versions. A cache hit avoids rebuilding
+those engines; its total runtime must be measured on a subsequent package run.

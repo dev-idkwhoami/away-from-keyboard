@@ -40,7 +40,8 @@ to quit the app.
 Download an Arch package from [Releases](https://github.com/dev-idkwhoami/away-from-keyboard/releases)
 when a release is published. Development packages are available from successful
 [Arch package builds](https://github.com/dev-idkwhoami/away-from-keyboard/actions/workflows/package.yml):
-open a run, download `afk-arch-x86_64`, and extract the artifact ZIP.
+open a successful tag or manual package run, download `afk-arch-x86_64`,
+and extract the artifact ZIP. Pushes to `master` run code validation only.
 
 From the directory containing the downloaded package:
 
@@ -94,9 +95,11 @@ Nemotron adds generic speaker labels; it does not recognize people's identities.
 
 ## Meetings and files
 
-Use **Meeting recorder** to select your microphone and a desktop output or active
-application audio stream. **Stop & save** keeps the recording; **Process recording**
-transcribes it later. Recording itself does not run an AI model.
+Open **Meetings** to select your microphone and a desktop output or active
+application audio stream. **Stop & save** adds the recording to meeting history.
+Open a saved meeting to **Process recording**, read its transcript, or name its
+speakers. Meeting transcripts stay on their own pages, separate from Studio and
+dictation history. Recording itself does not run an AI model.
 
 Use **Transcribe file** for existing audio. Both workflows keep processing local.
 Speaker labels and timestamps are estimates, particularly when people talk over

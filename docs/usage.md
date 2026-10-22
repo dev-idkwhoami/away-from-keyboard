@@ -24,10 +24,13 @@ Close. Choose Model lists installed models while idle; Close exits AFK.
 
 ## Meeting recordings
 
-1. Choose **Your microphone** and **Meeting audio** in Meeting recorder.
+1. Open **Meetings** and choose **Your microphone** and **Meeting audio**.
 2. Select **Record meeting**, then **Stop & save** when finished.
 3. Prepare Whisper and Nemotron in Model Garage if needed.
-4. Choose **Process recording** in the saved recordings list.
+4. Open a recording from **Meeting history**, then choose **Process recording**.
+5. Read its transcript on that meeting’s page. Edit a speaker’s name and select
+   **Save name**; copied transcripts use your saved names. A blank name restores
+   the original label.
 
 Recording does not require a model and does not run transcription. Processing
 uses the current Whisper model and language. It labels the microphone as **You**
@@ -45,14 +48,17 @@ Use headphones: AFK does not implement acoustic echo cancellation. Speaker audio
 picked up by your microphone can appear twice in the transcript.
 
 Saved recordings survive restarts. Canceling processing preserves the audio for
-another attempt. Reprocessing replaces the meeting's history entry when history
-is enabled; canceling preserves the previously completed transcript.
+another attempt. Reprocessing replaces that meeting’s transcript; canceling
+preserves the previously completed transcript. Speaker names survive restarts
+and reprocessing, but should be checked after reprocessing because labels can
+be reassigned. Meetings do not populate Studio or dictation history.
 
 ### Storage and limits
 
 The data directory contains `meetings/<timestamp>/` folders with
 `microphone.wav`, `meeting-audio.wav` and `recording.json`. Processing adds logs
-and transcript files. Audio remains saved even with history disabled; deleting
+and transcript files. Custom speaker names are stored in `speakers.json`.
+Audio and meeting transcripts remain saved even with dictation history disabled; deleting
 history does not remove these folders.
 
 Two mono PCM16 tracks consume about **230 MB per hour**. Free disk and the WAV
@@ -96,3 +102,8 @@ Model downloads require internet access and are verified against pinned checksum
 Prepared models run offline. The packaged app includes its native engines;
 development builds compile them during preparation. The first GPU run of a
 packaged engine can take longer while the NVIDIA driver compiles CUDA kernels.
+
+The bubble waveform follows microphone volume, with a short scrolling history.
+Silence and stopped capture settle to a flat line; loading and processing do not
+simulate speech. Dictation meters the default PulseAudio/PipeWire microphone;
+meetings meter their selected microphone.

@@ -14,5 +14,5 @@
   <Button class="bubble-record" disabled={!studio.ready||studio.state.status.endsWith('stopping')} onclick={()=>act('Toggle')} aria-label={active?'Stop recording':'Start recording'}><Icon name={active?'stop':'mic'}/></Button>
   <Button variant="ghost" class="bubble-close" onclick={()=>act('HideBubble')} aria-label="Hide bubble to system tray" title="Hide to tray — recording continues"><Icon name="close"/></Button>
  </div>
- {#if expanded}<div class="bubble-transcript" bind:this={tail}>{studio.state.transcript||(studio.state.status==='meeting'?'Recording meeting audio. Process it later in Studio.':'Go on. We’re listening.')}</div><div class="bubble-footer"><span>ON DEVICE · {studio.state.settings.language.toUpperCase()}</span><Button variant="ghost" onclick={()=>act('Quit')} aria-label="Quit AFK"><Icon name="power"/></Button></div>{/if}
+ {#if expanded}<div class="bubble-transcript" bind:this={tail}>{studio.state.status.startsWith('meeting')?'Recording meeting audio. Find it on the Meetings page.':studio.state.transcript||'Go on. We’re listening.'}</div><div class="bubble-footer"><span>ON DEVICE · {studio.state.settings.language.toUpperCase()}</span><Button variant="ghost" onclick={()=>act('Quit')} aria-label="Quit AFK"><Icon name="power"/></Button></div>{/if}
 </div>

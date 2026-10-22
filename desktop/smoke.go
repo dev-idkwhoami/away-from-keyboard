@@ -44,6 +44,25 @@ func nativeSmoke() error {
 	if os.Getenv("AFK_TEST_COMMAND") == "" {
 		instanceID += ".smoke"
 	}
+	folder := filepath.Join(root, "meetings", "ui-smoke")
+	if err = os.MkdirAll(folder, 0700); err != nil {
+		return err
+	}
+	if err = saveMeetingRecording(&meetingSession{folder: folder, started: time.Now()}); err != nil {
+		return err
+	}
+	for _, name := range []string{"microphone.wav", "meeting-audio.wav"} {
+		if err = writeWAV(filepath.Join(folder, name), make([]byte, 32000)); err != nil {
+			return err
+		}
+	}
+	data, err := json.Marshal(MeetingDetail{Turns: []SpeakerTurn{{Speaker: "Speaker 1", Text: "Synthetic meeting fixture."}}})
+	if err != nil {
+		return err
+	}
+	if err = os.WriteFile(filepath.Join(folder, "transcript.json"), data, 0600); err != nil {
+		return err
+	}
 	app := createApp(s, false)
 	var mu sync.Mutex
 	results := map[string]string{}
@@ -56,7 +75,7 @@ func nativeSmoke() error {
 	script := `(async()=>{
  const call=async(name,...args)=>{const r=await fetch('/wails/runtime',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({object:0,method:0,args:{'call-id':crypto.randomUUID(),methodName:'main.Studio.'+name,args}})});if(!r.ok)throw Error(await r.text());const text=await r.text();return text?JSON.parse(text):null;};
  const report=async(data)=>fetch('/wails/runtime',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({object:3,method:0,args:{name:'afk:test',data}})});
- try {await new Promise(r=>setTimeout(r,1200));const state=await call('GetState');if(state.models.length!==4)throw Error('catalogue missing');if(!['dictation','meeting'].includes(state.settings.mode))throw Error('capture mode missing');const sources=await call('GetAudioSources');if(!Array.isArray(sources))throw Error('audio source binding failed');if(!location.search.includes('bubble')&&document.querySelectorAll('.studio-modes>section').length!==2)throw Error('meeting layout missing');if(typeof state.diarizationReady!=='boolean'||typeof state.settings.diarization!=='boolean')throw Error('speaker configuration missing');if(document.body.innerText.includes('BROWSER PREVIEW'))throw Error('native detection failed');if(document.querySelector('[role=alert]'))throw Error(document.querySelector('[role=alert]').textContent);await call('SetSettings',{...state.settings,theme:'light'});await new Promise(r=>setTimeout(r,200));if(document.documentElement.classList.contains('dark'))throw Error('theme event missing');await report({ok:true,bubble:location.search.includes('bubble'),url:location.href,text:document.body.innerText.slice(0,90),background:getComputedStyle(document.body).backgroundColor});}catch(e){await report({error:String(e),url:location.href});}
+ try {await new Promise(r=>setTimeout(r,1200));const state=await call('GetState');if(state.models.length!==4)throw Error('catalogue missing');if(!['dictation','meeting'].includes(state.settings.mode))throw Error('capture mode missing');const sources=await call('GetAudioSources');if(!Array.isArray(sources))throw Error('audio source binding failed');if(!location.search.includes('bubble')&&(document.querySelectorAll('.studio-modes>section').length!==1||!document.body.innerText.includes('Meetings')))throw Error('meeting layout missing');if(!location.search.includes('bubble')){const detail=await call('GetMeeting','ui-smoke');if(detail.turns.length!==1)throw Error('meeting details unavailable');await call('RenameMeetingSpeaker','ui-smoke','Speaker 1','Alex');const renamed=await call('GetMeeting','ui-smoke');if(renamed.speakerNames['Speaker 1']!=='Alex')throw Error('speaker name persistence failed');}if(typeof state.diarizationReady!=='boolean'||typeof state.settings.diarization!=='boolean')throw Error('speaker configuration missing');if(document.body.innerText.includes('BROWSER PREVIEW'))throw Error('native detection failed');if(document.querySelector('[role=alert]'))throw Error(document.querySelector('[role=alert]').textContent);await call('SetSettings',{...state.settings,theme:'light'});await new Promise(r=>setTimeout(r,200));if(document.documentElement.classList.contains('dark'))throw Error('theme event missing');await report({ok:true,bubble:location.search.includes('bubble'),url:location.href,text:document.body.innerText.slice(0,90),background:getComputedStyle(document.body).backgroundColor});}catch(e){await report({error:String(e),url:location.href});}
  })();`
 	for _, w := range []*application.WebviewWindow{s.main, s.bubble} {
 		win := w

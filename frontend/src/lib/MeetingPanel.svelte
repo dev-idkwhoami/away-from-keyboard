@@ -31,6 +31,6 @@
   <p class="meeting-hint">Defaults are selected when recording starts. You can also choose a specific device or active app stream. Start playback in Teams, then refresh. Use headphones to reduce echo.</p>
   <Button class="meeting-start" disabled={!studio.ready||!!snapshot.preparing||(busy&&!running)||snapshot.status==='meeting-stopping'||(!running&&(!settings.meetingMic||!settings.meetingAudio))} onclick={()=>act(running?'StopMeeting':'StartMeeting')}><Icon name={running?'stop':'mic'}/>{snapshot.status==='meeting-stopping'?'SAVING AUDIO…':snapshot.status==='meeting-loading'?'CANCEL STARTUP':running?'STOP & SAVE':'RECORD MEETING'}</Button>
   <Button variant="ghost" class="mode-choice" disabled={busy} aria-pressed={settings.mode==='meeting'} onclick={()=>setting({mode:'meeting'})}>{settings.mode==='meeting'?'✓ Global shortcut starts meetings':'Use global shortcut for meetings'}</Button>
-  <p class="meeting-hint">Audio only while recording. No transcription models run until you choose Process recording below.</p>
+  <p class="meeting-hint">Audio only while recording. No transcription models run until you open a saved meeting and choose Process recording.</p>
  </div>
 </section>
