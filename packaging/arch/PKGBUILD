@@ -1,0 +1,19 @@
+# Binary package assembled locally or by GitHub Actions. No AUR submission.
+pkgname=afk
+pkgver=0.1.0
+pkgrel=1
+pkgdesc='Away From Keyboard: local dictation and meeting transcription'
+arch=('x86_64')
+# The project owner has not selected a public source license yet.
+license=('LicenseRef-All-Rights-Reserved')
+depends=('gtk3' 'webkit2gtk-4.1' 'sdl2' 'ffmpeg' 'libpulse' 'libx11'
+         'gcc-libs' 'glibc' 'cuda' 'nvidia-utils')
+optdepends=('pipewire-pulse: PulseAudio-compatible audio server'
+            'kglobalacceld: global shortcuts on KDE Plasma'
+            'xorg-xwayland: bubble positioning in a Wayland session')
+options=('!strip' '!debug')
+# AFK_STAGE is a freshly populated allowlisted tree, never the development .afk.
+package() {
+    test -n "$AFK_STAGE" && test -d "$AFK_STAGE/usr/lib/afk/nemotron"
+    cp -a "$AFK_STAGE/usr" "$pkgdir/"
+}

@@ -1,0 +1,9 @@
+/.afk/
+/bin/
+/work/
+/frontend/node_modules/
+/frontend/dist/
+/desktop/assets/*
+!/desktop/assets/.gitkeep
+
+/dist/

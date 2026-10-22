@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Away From Keyboard
+Comment=Local dictation and meeting transcription
+Exec=afk-desktop
+Icon=afk
+Terminal=false
+Categories=AudioVideo;Audio;Utility;
+StartupNotify=false
